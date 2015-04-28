@@ -1,6 +1,6 @@
-from .models import Resource, RFIDNumber
+from .models import Resource, RFIDNumber, WebUnlock, LogEvent
 from .forms import KeyForm
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -34,7 +34,21 @@ def configure_rfid(request):
         request.user.rfidnumber
         form = KeyForm(instance=tag)
 
-    data = {}
-    data['form'] = form
-    data['title'] = 'Configure RFID'
-    return render(request, "ps1auth/form.html", data)
+    context = {}
+    context['form'] = form
+    context['title'] = 'Configure RFID'
+    return render(request, "ps1auth/form.html", context)
+
+@login_required()
+def history(request):
+    context = {}
+    context['webunlocks'] =  WebUnlock.objects.all()
+    context['log_events'] = LogEvent.objects.all()
+    return render(request, "rfid/history.html", context)
+
+@login_required()
+def unlock(request, resource_name):
+    context = {}
+    resource = Resource.objects.get(name=resource_name)
+    resource.webunlock.unlock()
+    return JsonResponse(context)

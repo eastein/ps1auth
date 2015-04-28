@@ -1,6 +1,7 @@
 from django.db import models
 #from django.contrib.auth.models import User
 from django.conf import settings
+import urllib.request
 
 
 class Resource(models.Model):
@@ -32,6 +33,17 @@ class AdGroupResource(Resource):
         except KeyError:
             return False
 
+class WebUnlock(models.Model):
+    resource = models.OneToOneField('Resource')
+    url = models.URLField()
+
+    def __str__(self):
+        return "{} Unlock".format(self.resource.name)
+
+    def unlock(self):
+        return urllib.request.urlopen(self.url)
+
+
 class RFIDNumber(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
     ASCII_125khz = models.CharField(default = "", max_length=12, unique=True, verbose_name="RFID")
@@ -39,3 +51,12 @@ class RFIDNumber(models.Model):
     def __str__(self):
         return u'user={}, RFID={}'.format(self.user, self.ASCII_125khz)
 
+class LogEvent(models.Model):
+    models.ForeignKey('Resource')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL)
+
+class RFIDAccessLogEvent(LogEvent):
+    pass
+
+class ButtonPressLogEvent(LogEvent):
+    pass
