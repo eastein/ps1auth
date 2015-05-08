@@ -5,19 +5,38 @@ import uuid
 from accounts.models import PS1User
 from member_management.models import Person, EmailRecord
 from .models import Token
+from django.utils.safestring import mark_safe
+from django.core.urlresolvers import reverse
 
 
 class activate_account_form(forms.Form):
     ps1_email = forms.EmailField(label="PS1 Email")
+    unknown_email_message = """
+        I don't recognize your email address.
+        If you have any issues activating your account
+        please email <a href="mailto:{0}">
+        {0}</a>
+    """.format('info@pumpingstationone.org')
+
+    already_activated_message = """
+        Your account has already been activated.
+        Try using <a href={0}>password recovery</a> or emailing
+        <a href="mailto:{1}">{1}</a>
+    """
+
 
     def clean_ps1_email(self):
         try:
             contact = Person.objects.get(email=self.cleaned_data['ps1_email'])
         except Person.DoesNotExist:
-            raise forms.ValidationError("Unknown Email Address")
+            raise forms.ValidationError(mark_safe(self.unknown_email_message))
         if contact.user is not None:
-            #HEFTODO an account recovery link would be nice.
-            raise forms.ValidationError("Your Account has already been activated")
+            raise forms.ValidationError(
+                mark_safe(self.already_activated_message.format(
+                    reverse('password-reset'),
+                    'info@pumpingstationone.org'
+                ))
+            )
 
         return self.cleaned_data['ps1_email']
 
@@ -76,15 +95,14 @@ class account_register_form(forms.Form):
         needs to be refactored.
         """
         token = Token.objects.get(token=self.cleaned_data['token'])
-                
+
         username = str(self.cleaned_data['preferred_username'])
         first_name = str(self.cleaned_data['first_name'])
         last_name = str(self.cleaned_data['last_name'])
         email = str(self.cleaned_data['preferred_email'])
-        
+
         user = PS1User.objects.create_user(username, email=email, first_name=first_name, last_name=last_name)
         token.person.user = user
         token.person.save()
         token.delete()
         return user
-
