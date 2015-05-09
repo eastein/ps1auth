@@ -14,7 +14,13 @@
 {% if person.user %}
 <div class="row">
   <div class="col-md-offset-1 col-md-11">
-    <p>Username: {{ person.user }}</p>
+    <ul>
+      <li>Username: {{ person.user }}</li>
+      {% for group in person.user.groups %}
+      <li>{{ group }} Person</li>
+      {% endfor %}
+    </ul>
+    <a href="{% url 'accounts.views.edit_groups_for_user' person.user.pk %}">Edit Groups</a>
   </div>
 </div>
 {% else %}

@@ -1,15 +1,18 @@
 from django.contrib.sites.models import get_current_site
 from django.template import loader
 from django import forms
+from django.forms.widgets import HiddenInput
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from accounts.models import PS1User
 #from .tokens import default_token_generator
-from .tokens import *
 from .backends import PS1Backend
+from .models import PS1Group
+from .tokens import *
+
 
 class PasswordResetForm(forms.Form):
-    """ 
+    """
     Form grabbed from https://github.com/django/django/blob/6118d6d1c982e428cf398ac998eb9f0baba15bad/django/contrib/auth/forms.py#L210-L250
     """
     email = forms.EmailField(label=("Email"), max_length=254)
@@ -91,7 +94,7 @@ class SetPasswordForm(forms.Form):
 
     def clean(self):
         """
-        Warning, this function does the actualy password resetting.
+        Warning, this function does the actual password resetting.
         """
         try:
             password = self.cleaned_data.get('new_password1') or ""
@@ -102,7 +105,38 @@ class SetPasswordForm(forms.Form):
 
     def save(self, commit=True):
         """
-        Warning, this function Does no do work, the actual work is doen in clean()
+        Warning, this function does not do work, the actual work is done in clean()
         """
         return self.user
 
+class EditUserGroupForm(forms.Form):
+    ACTIONS = (
+        ('add',''),
+        ('remove','')
+    )
+    account_pk = forms.CharField(widget=HiddenInput())
+    group_dn = forms.CharField(widget=HiddenInput())
+    action = forms.ChoiceField(widget=HiddenInput, choices=ACTIONS)
+    _user = None
+    _group = None
+
+    def apply(self):
+        if(self.cleaned_data['action'] == 'add'):
+            return self.group.add_user(self.account)
+        elif(self.cleaned_data['action'] == 'remove'):
+            return self.group.remove_user(self.account)
+        else:
+            return false
+
+    @property
+    def group(self):
+        if not self._group:
+            self._group = PS1Group.objects.get(dn=self.cleaned_data['group_dn'])
+        return self._group
+
+
+    @property
+    def account(self):
+        if not self._user:
+            self._account = PS1User.objects.get(pk=self.cleaned_data['account_pk'])
+        return self._account

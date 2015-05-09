@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 {% load bootstrap3 %}
 {% load static from staticfiles %}
 <html lang=en>
@@ -43,6 +43,7 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ user.get_short_name }} <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="{% url 'rfid.views.configure_rfid' %}">Configure RFID</a></li>
+                <li><a href="{% url 'memberpoint.views.my_points' %}">Member Points</a></li>
                 <li><a href="{% url 'accounts.views.set_password' %}">Reset Password</a></li>
                 <li><a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a></li>
                 {% if user.is_staff %}<li class="divider"></li>

@@ -11,7 +11,7 @@ Creating a user
 
     vagrant ssh
     cd /vagrant
-    ./manage.py createsuperuser
+    ./manage.py create_person
 
 Viewing the site
 ================

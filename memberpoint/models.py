@@ -6,7 +6,7 @@ import reversion
 
 class MemberPointManager(models.Manager):
     use_for_related_fields = True
-    
+
     def valid(self):
         now = timezone.now()
         last_year = now.replace(now.year -1)
@@ -49,5 +49,10 @@ class MemberPoint(models.Model):
 
     def is_expired(self):
         now = timezone.now()
-        return not self.consumed_on and now.replace(now.year-1) > self.created_on 
+        return not self.consumed_on and now.replace(now.year-1) > self.created_on
 
+    def is_consumed(self):
+        return self.consumed_on is not None
+
+    def history(self):
+        return reversion.get_for_object(self).order_by('revision__date_created')

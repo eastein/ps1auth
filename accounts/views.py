@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import password_reset_complete
@@ -12,9 +13,9 @@ from django.template.response import TemplateResponse
 from django.views.decorators.debug import sensitive_variables, sensitive_post_parameters
 
 from .tokens import default_token_generator
-from .forms import SetPasswordForm
+from .forms import SetPasswordForm, EditUserGroupForm
 from .backends import PS1Backend, get_ldap_connection
-from .models import Token
+from .models import Token, PS1Group
 
 def hello_world(request):
     t = get_template("hello_world.html")
@@ -156,10 +157,50 @@ def audits(request):
     data['payers'] = paypal_payers()
     return render( request, "audits.html", data )
 
-
 from datetime import datetime, timedelta
 
 def win32_filetime(filetime_timestamp):
     microseconds = int(filetime_timestamp) / 10.
     return datetime(1601,1,1) + timedelta(microseconds=microseconds)
 
+@staff_member_required
+def edit_groups_for_user(request, user_id):
+    if request.method == "POST":
+        form = EditUserGroupForm(request.POST)
+        if form.is_valid() and form.apply():
+            if form.cleaned_data['action'] == 'add':
+                messages.success(request,
+                    "{} is now a {} person.".format(
+                        form.account,
+                        form.group
+                    )
+                )
+            elif form.cleaned_data['action'] == 'remove':
+                messages.success(request,
+                    "{} is no longer a {} person.".format(
+                    form.account,
+                    form.group
+                    )
+                )
+        else:
+            messages.error(request, "Failed to change person.")
+
+    data = {}
+    account = PS1User.objects.get(pk=user_id)
+    data['account'] = account
+    data['group_forms'] = []
+    for group in PS1Group.objects.all():
+        if group.has_user(account):
+            action='remove'
+        else:
+            action='add'
+        form_data = {
+            'account_pk':  account.pk,
+            'group_dn': group.dn,
+            'action':   action,
+        }
+        form = EditUserGroupForm(form_data)
+        form._group = group
+        form._account = account
+        data['group_forms'].append(form)
+    return render(request, 'accounts/edit_groups_for_user.html', data)

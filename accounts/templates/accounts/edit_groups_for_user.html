@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-3">
+    <h2>{{account|title}}'s Groups</h2>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-3">
+      {% for form in group_forms %}
+      <form class="form" action="" method="post">
+        {% csrf_token %}
+        {% bootstrap_form form  %}
+        {% buttons %}
+        {% if form.action.value == 'add' %}
+          <button type="submit" class="btn btn-success btn-xs">
+            {% bootstrap_icon "plus" %} Add
+          </button> {{ form.group }} People
+          {% elif form.action.value == 'remove' %}
+          <button type="submit" class="btn btn-danger btn-xs">
+            {% bootstrap_icon "minus" %} Remove
+          </button> {{ form.group }} People
+          {% endif %}
+        {% endbuttons %}
+      </form>
+      {% endfor %}
+  </div>
+</div>
+{% endblock %}

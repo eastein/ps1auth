@@ -38,4 +38,3 @@ def configure_rfid(request):
     data['form'] = form
     data['title'] = 'Configure RFID'
     return render(request, "ps1auth/form.html", data)
-

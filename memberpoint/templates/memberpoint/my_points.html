@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load bootstrap3  %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h1>{{user|title}}'s Member Points</h1>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <h2>Available Member Points</h2>
+  </div>
+</div>
+{% for point in user.memberpoint_set.valid %}
+<div class="row">
+  <div class="col-md-12">
+    <h3>{{ point.reason}}</h3>
+    <p>Granted on {{point.created_on}}</p>
+    {% for version in point.history %}
+    <p>{{ version.revision.user }} ({{version.revision.date_created}}) {% if version.revision.comment %}: {{ version.revision.comment }}{% endif%}</p>
+    {% endfor %}
+  </div>
+</div>
+{% empty %}
+You have no member points.
+{% endfor %}
+
+<div class="row">
+  <div class="col-md-12">
+    <h2>Consumed Member Points</h2>
+  </div>
+</div>
+{% for point in user.memberpoint_set.consumed %}
+<div class="row">
+  <div class="col-md-12">
+    <h3>{{ point.reason}}</h3>
+    {% if point.consumed_on %}
+    <p>Used on {{point.consumed_on}}</p>
+    {% endif %}
+    {% for version in point.history %}
+    <p>{{ version.revision.user }} ({{version.revision.date_created}}) {% if version.revision.comment %}: {{ version.revision.comment }}{% endif%}</p>
+    {% endfor %}
+  </div>
+</div>
+{% empty %}
+You have no consumed points.
+{% endfor %}
+
+<div class="row">
+  <div class="col-md-12">
+    <h2>Expired Member Points</h2>
+  </div>
+</div>
+{% for point in user.memberpoint_set.expired %}
+<div class="row">
+  <div class="col-md-12">
+    <h3>{{ point.reason}}</h3>
+    {% if point.consumed_on %}
+    <p>Used on {{point.consumed_on}}</p>
+    {% endif %}
+    {% for version in point.history %}
+    <p>{{ version.revision.user }} ({{version.revision.date_created}}) {% if version.revision.comment %}: {{ version.revision.comment }}{% endif%}</p>
+    {% endfor %}
+  </div>
+</div>
+{% empty %}
+You have no expired points.
+{% endfor %}
+
+{% endblock %}

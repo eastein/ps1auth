@@ -8,14 +8,17 @@
 {% block content %}
 
 <div class="row">
-  <div class="col-md-4">
-    <h2 class="well">Full Members: {{ full_members.count }}</h2>
+  <div class="col-md-3">
+    <h3 class="well">Full Members: {{ full_members.count }}</h3>
   </div>
-  <div class="col-md-4">
-    <h2 class="well">Total Members: {{ member_count }}</h2>
+  <div class="col-md-3">
+    <h3 class="well">Starving Hackers: {{ starving_hackers.count }}</h3>
   </div>
-  <div class="col-md-4">
-    <h2 class="well">Quorum: {{ quorum_count }}</h2>
+  <div class="col-md-3">
+    <h3 class="well">Total Members: {{ member_count }}</h3>
+  </div>
+  <div class="col-md-3">
+    <h3 class="well">Quorum: {{ quorum_count }}</h3>
   </div>
 </div>
 

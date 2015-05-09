@@ -13,23 +13,24 @@ export ZOHO_AUTHTOKEN="add-your-auth-token"
 export PAYPAL_RECEIVER_EMAIL="money@vagrant.lan"
 
 # Update the System
-#sudo pacman -Syu --noconfirm
 pacman -Syy
 pacman -S archlinux-keyring --noconfirm
+pacman -S package-query pacman --noconfirm
+pacman-db-upgrade
+pacman -Su --noconfirm
 
 # Set Timezone
 timedatectl set-timezone America/Chicago
 
 # Setup locale.gen
 cat << EOF > /etc/locale.gen
-en_US.UTF-8 UTF-8  
-en_US ISO-8859-1  
+en_US.UTF-8 UTF-8
+en_US ISO-8859-1
 EOF
 locale-gen
 
-# Install Dependencies 
-pacman -S --noconfirm --needed postgresql samba nginx
-sudo -u vagrant yaourt -Sy --noconfirm --aur rabbitmq
+# Install Dependencies
+pacman -S --noconfirm --needed postgresql samba nginx redis
 
 # Setup Samba
 samba-tool domain provision --realm=vagrant.lan --domain=${AD_DOMAIN} --server-role=dc --use-rfc2307 --adminpass=${AD_BINDDN_PASSWORD}
@@ -164,8 +165,8 @@ systemctl start ps1auth.socket
 systemctl enable ps1auth.socket
 systemctl start nginx
 systemctl enable nginx
-systemctl start rabbitmq
-systemctl enable rabbitmq
+systemctl start redis
+systemctl enable redis
 systemctl start celery
 systemctl enable celery
 systemctl start systemd-journal-gatewayd.socket

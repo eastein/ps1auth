@@ -1,13 +1,14 @@
-from django.db import models
+from django.conf import settings
+from django.core.cache import cache
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from .backends import PS1Backend, get_ldap_connection
-from ldap3 import BASE, MODIFY_ADD, MODIFY_REPLACE, ALL_ATTRIBUTES, LEVEL
+from django.db import models
+from ldap3 import BASE, MODIFY_ADD, MODIFY_DELETE, MODIFY_REPLACE, ALL_ATTRIBUTES, LEVEL
 from ldap3.utils.conv import escape_bytes
 from ldap3.utils.dn import escape_attribute_value
-from ldap3.core.exceptions import LDAPBindError
-from django.conf import settings
+from ldap3.core.exceptions import LDAPBindError, LDAPInvalidCredentialsResult
 import uuid
-from django.core.cache import cache
+from .backends import PS1Backend, get_ldap_connection
+
 
 class PS1UserManager(BaseUserManager):
 
@@ -21,7 +22,7 @@ class PS1UserManager(BaseUserManager):
             'userAccountControl': '514',
         }
 
-        # Our forms will always define these, but django gets unhappy if you require 
+        # Our forms will always define these, but django gets unhappy if you require
         # more than a username and password
         if first_name:
             attributes['givenName'] = first_name
@@ -71,7 +72,7 @@ class PS1UserManager(BaseUserManager):
         result = l.delete(user_dn)
         user.delete()
 
-    def create_superuser(self, object_guid, password, email = None):
+    def create_superuser(self, object_guid, password = None, email = None, first_name = None, last_name = None):
         """
         object_guid is actually a username. calling it object_guid gets around
         a bug in ./manage.py createsuperuser
@@ -140,15 +141,15 @@ class PS1User(AbstractBaseUser):
         try:
             get_ldap_connection(username, raw_password)
             return True
-        except LDAPBindError:
+        except (LDAPBindError, LDAPInvalidCredentialsResult):
             return False
 
     def set_password(self, raw_password):
         l = get_ldap_connection()
         password_value=  '"{}"'.format(raw_password).encode('utf-16-le')
-        
+
         password_changes = {
-            'unicodePwd':  (MODIFY_REPLACE,[password_value])
+            'unicodePwd':  (MODIFY_REPLACE, [password_value])
         }
 
         dn = self.ldap_user['distinguishedName'][0]
@@ -191,6 +192,13 @@ class PS1User(AbstractBaseUser):
             return False
 
     @property
+    def groups(self):
+        try:
+            return PS1Group.objects.filter(dn__in=self.ldap_user['memberOf'])
+        except KeyError:
+            return []
+
+    @property
     def ldap_user(self):
         if hasattr(self, '_ldap_user'):
             return self._ldap_user
@@ -219,6 +227,42 @@ class PS1User(AbstractBaseUser):
     def __str__(self):
         return self.get_short_name()
 
+class PS1Group(models.Model):
+    dn = models.CharField(max_length=255, unique=True)
+    display_name = models.CharField(max_length=255)
+
+    class Meta:
+        verbose_name = 'PS1 Group'
+
+    def add_user(self, user):
+        user_dn = user.ldap_user['distinguishedName'][0]
+        add_to_group_changelist = {
+            'member': (MODIFY_ADD, [user_dn])
+        }
+        with get_ldap_connection() as c:
+            c.modify(self.dn, add_to_group_changelist)
+            user._expire_ldap_data()
+            return c.result
+
+    def remove_user(self, user):
+        user_dn = user.ldap_user['distinguishedName'][0]
+        remove_from_group_changelist = {
+            'member': (MODIFY_DELETE, [user_dn])
+        }
+        with get_ldap_connection() as c:
+            c.modify(self.dn, remove_from_group_changelist)
+            user._expire_ldap_data()
+            return c.result
+
+    def has_user(self, user):
+        try:
+            return self.dn in user.ldap_user['memberOf']
+        except KeyError:
+            return False
+
+    def __str__(self):
+        return self.display_name
+
 def gen_uuid():
     return str(uuid.uuid4())
 
@@ -226,6 +270,3 @@ class Token(models.Model):
     user = models.ForeignKey('PS1User')
     key = models.CharField(max_length=36, default=gen_uuid, editable=False)
     timestamp = models.DateTimeField(auto_now_add=True)
-
-
-

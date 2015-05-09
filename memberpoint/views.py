@@ -52,6 +52,7 @@ class MemberPointFormView(FormView):
                 form.save()
                 messages.success(request, form.success_message)
                 reversion.set_user(request.user)
+                reversion.set_comment(form.success_message)
             return HttpResponseRedirect(request.get_full_path())
         else:
             return self.form_invalid(form)
@@ -59,3 +60,8 @@ class MemberPointFormView(FormView):
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(MemberPointFormView, self).dispatch(*args, **kwargs)
+
+@login_required
+def my_points(request):
+    context = {}
+    return render(request, 'memberpoint/my_points.html', context)
