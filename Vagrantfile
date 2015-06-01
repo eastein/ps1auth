@@ -61,6 +61,7 @@ sudo -u vagrant createdb ps1auth
 # Bootstrap App
 
 sudo -u vagrant python -m venv venv
+sudo -u vagrant venv/bin/pip install --upgrade pip
 sudo -u vagrant venv/bin/pip install -r /vagrant/requirements/local.txt
 sudo -u vagrant venv/bin/pip install gunicorn
 sudo -u vagrant -E venv/bin/python /vagrant/manage.py syncdb --noinput
