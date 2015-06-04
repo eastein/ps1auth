@@ -3,6 +3,7 @@ from .models import Person
 from django.test import Client, TestCase
 from pprint import pprint
 
+
 class PersonTest(TestCase):
 
     def setUp(self):
@@ -44,3 +45,29 @@ class PersonTest(TestCase):
 
         #clieanup
         PS1User.objects.delete_user(lonely)
+
+
+class QuorumTest(TestCase):
+
+    def test_no_members(self):
+        self.assertEqual(1, Person.objects.quorum())
+
+    def test_no_full_members(self):
+        Person.objects.create(first_name=".", last_name=".", membership_status="starving_hacker")
+        self.assertEqual(1, Person.objects.quorum())
+
+    def test_quorum(self):
+        # no members
+        self.assertEqual(1, Person.objects.quorum())
+
+        Person.objects.create(first_name="1", last_name=".", membership_status="full_member")
+        self.assertEqual(1, Person.objects.quorum())
+
+        Person.objects.create(first_name="2", last_name=".", membership_status="full_member")
+        self.assertEqual(1, Person.objects.quorum())
+
+        Person.objects.create(first_name="3", last_name=".", membership_status="full_member")
+        self.assertEqual(1, Person.objects.quorum())
+
+        Person.objects.create(first_name="4", last_name=".", membership_status="full_member")
+        self.assertEqual(2, Person.objects.quorum())
