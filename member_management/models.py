@@ -32,7 +32,7 @@ class PersonManager(models.Manager):
 
     def quorum(self):
         full_members = self.get_queryset().filter(membership_status='full_member').count()
-        return max(int(ceil(float(full_members / 3))), 1)
+        return max(int(ceil(full_members / 3)), 1)
 
 
 @reversion.register
