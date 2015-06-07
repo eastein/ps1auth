@@ -1,3 +1,4 @@
+from math import ceil
 from django.db import models
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -28,6 +29,11 @@ class PersonManager(models.Manager):
 
     def members(self):
         return self.get_queryset().filter(Q(membership_status='full_member')|Q(membership_status='starving_hacker'))
+
+    def quorum(self):
+        full_members = self.get_queryset().filter(membership_status='full_member').count()
+        return max(int(ceil(full_members / 3)), 1)
+
 
 @reversion.register
 class Person(models.Model):
