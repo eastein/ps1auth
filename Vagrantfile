@@ -61,8 +61,9 @@ sudo -u vagrant createdb ps1auth
 # Bootstrap App
 
 sudo -u vagrant python -m venv venv
-sudo -u vagrant venv/bin/pip install --upgrade pip
-sudo -u vagrant venv/bin/pip install -r /vagrant/requirements/local.txt
+sudo -u vagrant venv/bin/pip install --find-links=/vagrant/wheelhouse --upgrade pip
+sudo -u vagrant venv/bin/pip install --find-links=/vagrant/wheelhouse wheel
+sudo -u vagrant venv/bin/pip install --find-links=/vagrant/wheelhouse -r /vagrant/requirements/local.txt
 sudo -u vagrant venv/bin/pip install gunicorn
 sudo -u vagrant -E venv/bin/python /vagrant/manage.py syncdb --noinput
 
@@ -186,5 +187,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provider "virtualbox" do |v|
     v.memory = 2048
     v.cpus = 2
+  end
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.scope = :box
   end
 end
