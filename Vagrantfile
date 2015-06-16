@@ -14,8 +14,8 @@ export PAYPAL_RECEIVER_EMAIL="money@vagrant.lan"
 
 # Update the System
 pacman -Syy
-pacman -S archlinux-keyring --noconfirm
-pacman -S package-query pacman --noconfirm
+pacman -S archlinux-keyring --noconfirm --needed
+pacman -S pacman --noconfirm --needed
 pacman-db-upgrade
 pacman -Su --noconfirm
 
@@ -30,7 +30,7 @@ EOF
 locale-gen
 
 # Install Dependencies
-pacman -S --noconfirm --needed postgresql samba nginx redis
+pacman -S --noconfirm --needed postgresql samba nginx redis python git
 
 # Setup Samba
 samba-tool domain provision --realm=vagrant.lan --domain=${AD_DOMAIN} --server-role=dc --use-rfc2307 --adminpass=${AD_BINDDN_PASSWORD}
@@ -177,14 +177,12 @@ SCRIPT
 
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "archlinux-x86_64"
-  config.vm.box_url = "http://cloud.terry.im/vagrant/archlinux-x86_64.box"
+  config.vm.box = "hef/arch"
   config.vm.provision "shell", inline: $script
   config.vm.network "forwarded_port", guest: 5555, host: 5555, auto_correct: true
   config.vm.network "forwarded_port", guest: 8001, host: 8001, auto_correct: true
   config.vm.network "forwarded_port", guest: 19531, host: 8002, auto_correct: true
   config.vm.network "forwarded_port", guest: 389, host: 1389, auto_correct: true
-
   config.vm.provider "virtualbox" do |v|
     v.memory = 2048
     v.cpus = 2
