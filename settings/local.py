@@ -22,7 +22,7 @@ CACHES = {
 
 INSTALLED_APPS += (
 #    "debug_toolbar",
-#    "django_jenkins",
+    "django_jenkins",
 )
 
 INTERNAL_IPS = (

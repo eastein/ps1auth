@@ -38,7 +38,7 @@ systemctl start samba
 systemctl enable samba
 
 # Set Shell Environment Variables
-cat << EOF >> .bashrc
+cat << EOF > .bashrc
 export AD_URL=${AD_URL}
 export AD_DOMAIN=${AD_DOMAIN}
 export AD_BASEDN=${AD_BASEDN}
