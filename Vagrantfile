@@ -184,6 +184,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 8001, host: 8001, auto_correct: true
   config.vm.network "forwarded_port", guest: 19531, host: 8002, auto_correct: true
   config.vm.network "forwarded_port", guest: 389, host: 1389, auto_correct: true
+  config.vm.provider "libvirt" do |v|
+    config.vm.synced_folder ".", "/vagrant", type: "9p", accessmode: "mapped"
+  end
   config.vm.provider "virtualbox" do |v|
     v.memory = 2048
     v.cpus = 2
