@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import datetime
+from django.utils import timezone
 from django.conf import settings
 
 
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('reason', models.TextField(help_text=b'Reason the point was created')),
-                ('created_on', models.DateTimeField(default=datetime.datetime.now)),
+                ('created_on', models.DateTimeField(default=timezone.now())),
                 ('consumed_on', models.DateTimeField(null=True, blank=True)),
                 ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
