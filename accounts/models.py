@@ -5,7 +5,7 @@ from django.db import models
 from ldap3 import BASE, MODIFY_ADD, MODIFY_DELETE, MODIFY_REPLACE, ALL_ATTRIBUTES, LEVEL
 from ldap3.utils.conv import escape_bytes
 from ldap3.utils.dn import escape_attribute_value
-from ldap3.core.exceptions import LDAPBindError, LDAPInvalidCredentialsResult
+from ldap3.core.exceptions import LDAPBindError, LDAPInvalidCredentialsResult, LDAPEntryAlreadyExistsResult, LDAPNoSuchAttributeResult
 import uuid
 from .backends import PS1Backend, get_ldap_connection
 
@@ -227,7 +227,33 @@ class PS1User(AbstractBaseUser):
     def __str__(self):
         return self.get_short_name()
 
+class PS1GroupManager(models.Manager):
+
+    def create_group(self, group_name):
+        dn = "CN={0},{1}".format(group_name, settings.AD_BASEDN)
+        object_class = ['top', 'group']
+        attributes = {
+            'cn':  group_name,
+            'sAMAccountName': group_name,
+            'msSFU30Name': group_name,
+        }
+
+        ldap_connection = get_ldap_connection()
+
+        with ldap_connection as c:
+            c.add(dn, object_class, attributes)
+
+        ps1group = PS1Group(dn=dn,display_name=group_name)
+        ps1group.save()
+        return ps1group
+
+    def delete_group(self, group):
+        l = get_ldap_connection()
+        result = l.delete(group.dn)
+        group.delete()
+
 class PS1Group(models.Model):
+    objects = PS1GroupManager()
     dn = models.CharField(max_length=255, unique=True)
     display_name = models.CharField(max_length=255)
 
@@ -240,7 +266,11 @@ class PS1Group(models.Model):
             'member': (MODIFY_ADD, [user_dn])
         }
         with get_ldap_connection() as c:
-            c.modify(self.dn, add_to_group_changelist)
+            try:
+                c.modify(self.dn, add_to_group_changelist)
+            except LDAPEntryAlreadyExistsResult:
+                # User is already in the group
+                pass
             user._expire_ldap_data()
             return c.result
 
@@ -250,7 +280,11 @@ class PS1Group(models.Model):
             'member': (MODIFY_DELETE, [user_dn])
         }
         with get_ldap_connection() as c:
-            c.modify(self.dn, remove_from_group_changelist)
+            try:
+                c.modify(self.dn, remove_from_group_changelist)
+            except LDAPNoSuchAttributeResult:
+                # User is not in the group
+                pass
             user._expire_ldap_data()
             return c.result
 

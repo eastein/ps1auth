@@ -1,5 +1,6 @@
 from django.test import TestCase
 from .models import PS1User, PS1Group
+from .forms import EditUserGroupForm
 from ldap3 import Server, Connection, SUBTREE, Tls, MODIFY_REPLACE, BASE, ALL_ATTRIBUTES
 from django.conf import settings
 from django.test import Client
@@ -70,3 +71,60 @@ class GroupTest(TestCase):
 
         #cleanup
         PS1User.objects.delete_user(lonely)
+
+class GroupActionsTest(TestCase):
+
+    def setUp(self):
+        self.user = PS1User.objects.create_user("grouptestuser", password="Garbage1",  email="foo@bar.com")
+        self.group = PS1Group.objects.create_group('testgroup')
+        self.client = Client()
+        result = self.client.login(username='grouptestuser', password='Garbage1')
+        self.assertTrue(result)
+
+    def tearDown(self):
+        PS1User.objects.delete_user(self.user)
+        PS1Group.objects.delete_group(self.group)
+
+    def test_add_and_remove(self):
+        add_form_data = {
+            'account_pk': self.user.pk,
+            'group_dn': self.group.dn,
+            'action': 'add'
+        }
+        add_form = EditUserGroupForm(add_form_data)
+        self.assertTrue(add_form.is_valid())
+        self.assertTrue(add_form.apply())
+
+        remove_form_data = {
+            'account_pk': self.user.pk,
+            'group_dn': self.group.dn,
+            'action': 'remove'
+        }
+        remove_form = EditUserGroupForm(remove_form_data)
+        self.assertTrue(remove_form.is_valid())
+        self.assertTrue(remove_form.apply())
+
+    def test_add_user_to_group_twice(self):
+        """ Make sure we handle double submission of form."""
+        add_form_data = {
+            'account_pk': self.user.pk,
+            'group_dn': self.group.dn,
+            'action': 'add'
+        }
+        add_form = EditUserGroupForm(add_form_data)
+        self.assertTrue(add_form.is_valid())
+        self.assertTrue(add_form.apply())
+
+        add_form2 = EditUserGroupForm(add_form_data)
+        self.assertTrue(add_form2.is_valid())
+        self.assertFalse(add_form2.apply())
+
+    def test_remove_user_from_a_group_they_are_not_in(self):
+        remove_form_data = {
+            'account_pk': self.user.pk,
+            'group_dn': self.group.dn,
+            'action': 'remove'
+        }
+        remove_form = EditUserGroupForm(remove_form_data)
+        self.assertTrue(remove_form.is_valid())
+        self.assertFalse(remove_form.apply())
