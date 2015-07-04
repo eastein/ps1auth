@@ -12,11 +12,9 @@ class PasswordResetTokenGenerator(object):
         return str(t.key)
 
     def check_token(self, user, token):
-        print("Token Check for {0},{1}".format(user, token))
         t = Token.objects.get(key=token)
         if t.user == user:
             return True
         return False
 
 default_token_generator = PasswordResetTokenGenerator()
-
