@@ -1,12 +1,13 @@
-from django import forms
-from django.template import loader
 import re
 import uuid
+from django import forms
+from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.template import loader
+from django.utils.safestring import mark_safe
 from accounts.models import PS1User
 from member_management.models import Person, EmailRecord
 from .models import Token
-from django.utils.safestring import mark_safe
-from django.core.urlresolvers import reverse
 
 
 class activate_account_form(forms.Form):
@@ -15,13 +16,13 @@ class activate_account_form(forms.Form):
         I don't recognize your email address.
         If you have any issues activating your account
         please email <a href="mailto:{0}">
-        {0}</a>
-    """.format('info@pumpingstationone.org')
+        {0}</a>.
+    """.format(settings.SUPPORT_EMAIL_ADDRESS)
 
     already_activated_message = """
         Your account has already been activated.
         Try using <a href={0}>password recovery</a> or emailing
-        <a href="mailto:{1}">{1}</a>
+        <a href="mailto:{1}">{1}</a>.
     """
 
 
@@ -34,7 +35,7 @@ class activate_account_form(forms.Form):
             raise forms.ValidationError(
                 mark_safe(self.already_activated_message.format(
                     reverse('password-reset'),
-                    'info@pumpingstationone.org'
+                    settings.SUPPORT_EMAIL_ADDRESS
                 ))
             )
 

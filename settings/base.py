@@ -238,6 +238,7 @@ AUTH_USER_MODEL = 'accounts.PS1User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 LOGIN_REDIRECT_URL = '/zinc/member_list'
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
@@ -253,5 +254,5 @@ AD_BASEDN = get_env_variable('AD_BASEDN')
 AD_BINDDN = get_env_variable('AD_BINDDN')
 AD_BINDDN_PASSWORD = get_env_variable('AD_BINDDN_PASSWORD')
 ZOHO_AUTHTOKEN = get_env_variable('ZOHO_AUTHTOKEN')
+SUPPORT_EMAIL_ADDRESS = get_env_variable('SUPPORT_EMAIL_ADDRESS')
 
-TEST_RUNNER = 'django.test.runner.DiscoverRunner'
