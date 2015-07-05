@@ -1,10 +1,12 @@
-from django.contrib.sites.models import get_current_site
+from django.contrib.sites.shortcuts import get_current_site
 from django.template import loader
 from django import forms
 from django.forms.widgets import HiddenInput
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from accounts.models import PS1User
+from ldap3.core.exceptions import LDAPConstraintViolationResult
+from pprint import pprint
 #from .tokens import default_token_generator
 from .backends import PS1Backend
 from .models import PS1Group
@@ -99,8 +101,8 @@ class SetPasswordForm(forms.Form):
         try:
             password = self.cleaned_data.get('new_password1') or ""
             self.user.set_password(password)
-        except ldap.CONSTRAINT_VIOLATION as e:
-            raise forms.ValidationError(e[0]['info'])
+        except LDAPConstraintViolationResult as e:
+            raise forms.ValidationError(e.message)
         return self.cleaned_data
 
     def save(self, commit=True):
