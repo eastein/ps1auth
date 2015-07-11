@@ -8,7 +8,9 @@
 {% block content %}
 <div class="row">
   <div class="col-md-offset-2 col-md-10">
-		<p>Please enter the email you signed up to PS1 with.</p>
+		<p>Please enter the email you signed up to PS1 with.<br \>
+      Please note, email addresses are case sensitive.<br \>
+      If you have any issues activating your account, please email <a href="mailto:{{ admin_email }}">{{ admin_email }}</a>.</p>
     {% include 'ps1auth/_form.html' %}
   </div>
 </div>

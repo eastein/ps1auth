@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.sites.shortcuts import get_current_site
@@ -5,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from .forms import activate_account_form, account_register_form
-from .models import Token 
+from .models import Token
 
 # Create your views here.
 
@@ -20,6 +21,7 @@ def activate_account(request):
         form = activate_account_form()
     return render(request, 'signup/activate_account.html', {
         'form': form,
+        'admin_email': format(settings.SUPPORT_EMAIL_ADDRESS),
     })
 
 def activation_email_sent(request):
