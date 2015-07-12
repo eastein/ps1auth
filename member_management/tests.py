@@ -3,8 +3,10 @@ from .models import (
     IDCheck,
     Person,
 )
+from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.test import Client, TestCase
-from pprint import pprint
+import reversion
 
 
 class PersonTest(TestCase):
@@ -25,7 +27,6 @@ class PersonTest(TestCase):
         )
         person.save()
         url = '/mm/person/{}'.format(person.pk)
-        #print(url)
         response = self.client.get(url)
 
         self.assertEquals(200, response.status_code)
@@ -46,7 +47,7 @@ class PersonTest(TestCase):
         response = self.client.get(url)
         self.assertEquals(200, response.status_code)
 
-        #clieanup
+        #cleanup
         PS1User.objects.delete_user(lonely)
 
     def test_pending_count(self):
@@ -64,6 +65,18 @@ class PersonTest(TestCase):
         IDCheck.objects.create(person=p1, user=self.user)
         self.assertEqual(1, Person.objects.pending_members().count())
 
+    def test_person_admin_history(self):
+        with transaction.atomic(), reversion.create_revision():
+            person =  Person(
+                first_name = "lonely",
+                last_name = "person"
+            )
+            person.save()
+
+        first_version = reversion.get_for_object(person)[0]
+        url = reverse('admin:member_management_person_revision', args=(person.id,first_version.id))
+        response = self.client.get(url)
+        self.assertEquals(200, response.status_code)
 
 class QuorumTest(TestCase):
 
