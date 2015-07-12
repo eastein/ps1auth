@@ -21,7 +21,7 @@ def activate_account(request):
         form = activate_account_form()
     return render(request, 'signup/activate_account.html', {
         'form': form,
-        'admin_email': format(settings.SUPPORT_EMAIL_ADDRESS),
+        'support_email': format(settings.SUPPORT_EMAIL_ADDRESS),
     })
 
 def activation_email_sent(request):
