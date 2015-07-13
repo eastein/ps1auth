@@ -10,8 +10,8 @@
 <h2>Door Unlock</h2>
 <div class="row">
   {% for unlock in webunlocks %}
-  <div class="col-md-2">
-    <a role="button" class="rfid-btn btn btn-success" href="{% url 'rfid.views.unlock' unlock.resource.name %}">{% bootstrap_icon "lock" %} {{ unlock.resource }}</a>
+  <div class="col-xs-4 col-md-2">
+    <a role="button" class="rfid-btn btn btn-success" href="{% url 'rfid.views.unlock' unlock.resource.name %}"><span class="fa fa-lock"></span> {{ unlock.resource }}</a>
   </div>
   {% endfor %}
 </div>
@@ -20,7 +20,7 @@
 {% for log_event in log_events %}
 <div class="row">
   <div class="col-sm-12">
-    {{log_event.user|title}} opened the {{log_event.resource.display_name}} {{log_event.created_on|timesince}} ago.
+    {{log_event.user|title}} opened the {{log_event.resource.display_name|lower}} {{log_event.created_on|timesince}} ago.
   </div>
 </div>
 {% endfor %}
