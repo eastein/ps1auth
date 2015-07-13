@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     url(r'^accounts/', include('accounts.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^ckeditor/', include('ckeditor.urls')),
+    url(r'^discourse/', include('discourse.urls')),
     url(r'^memberpoints/', include('memberpoint.urls')),
     url(r'^mm/', include('member_management.urls')),
     #url(r'^pp/', include('paypal_integration.urls')),
@@ -29,4 +30,3 @@ urlpatterns += patterns('',
 )
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += staticfiles_urlpatterns()
-
