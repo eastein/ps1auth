@@ -3,6 +3,7 @@ from django.conf import settings
 import logging
 from model_utils.managers import InheritanceManager
 import urllib.request
+from accounts.models import PS1Group
 
 logger = logging.getLogger(__name__)
 
@@ -15,27 +16,19 @@ class Resource(models.Model):
         """
         The default implementation just returns if the user is valid or not
         """
-
-        try:
-            rfid = RFIDNumber.objects.get(pk=tag.pk)
-            return rfid.user.is_active
-        except RFIDNumber.DoesNotExist:
-            return False
+        return tag.user.is_active
 
     def __str__(self):
-        return self.name
+        return self.display_name
 
 class AdGroupResource(Resource):
     """
     Resource that matches against AD groups.
     """
-    ad_group = models.CharField(max_length=255)
+    group = models.ForeignKey(PS1Group)
 
     def is_allowed(self, tag):
-        try:
-            return tag.user.is_active() and self.ad_group in self.ldap_user['memberOf']
-        except KeyError:
-            return False
+        return tag.user.is_active() and self.group.has_user(tag.user)
 
 class WebUnlock(models.Model):
     resource = models.OneToOneField('Resource')
@@ -76,7 +69,7 @@ class ButtonPressLogEvent(LogEvent):
     ip_address = models.GenericIPAddressField(blank=False)
 
     def __str__(self):
-        return "ButtonPressLogEvent(resource={},user={},created_on={},ip_addres={})".format(
+        return "ButtonPressLogEvent(resource={},user={},created_on={},ip_address={})".format(
             self.resource,
             self.user,
             self.created_on,

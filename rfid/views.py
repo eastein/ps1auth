@@ -8,7 +8,6 @@ from .models import Resource, RFIDAccessLogEvent, RFIDNumber, WebUnlock, LogEven
 from .forms import KeyForm
 
 
-
 def check(request, resource_name, tag_number):
     try:
         tag = RFIDNumber.objects.get(ASCII_125khz=tag_number)
