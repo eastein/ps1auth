@@ -1,7 +1,11 @@
+from math import ceil
 from django.db import models
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from django.db.models import Q
+from django.db.models import (
+    Count,
+    Q,
+)
 from django.template import Context, Template
 from datetime import date
 from email.mime.application import MIMEApplication
@@ -28,6 +32,16 @@ class PersonManager(models.Manager):
 
     def members(self):
         return self.get_queryset().filter(Q(membership_status='full_member')|Q(membership_status='starving_hacker'))
+
+    def quorum(self):
+        full_members = self.get_queryset().filter(membership_status='full_member').count()
+        return max(int(ceil(full_members / 3)), 1)
+
+    def pending_members(self):
+        """Get a query of all members who need IDs Checked"""
+        members = self.get_queryset().filter(Q(membership_status='full_member')|Q(membership_status='starving_hacker'))
+        return members.annotate(c=Count("idcheck")).filter(c__lte=1)
+
 
 @reversion.register
 class Person(models.Model):

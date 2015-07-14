@@ -12,7 +12,7 @@ urlpatterns = patterns('',
         {
             'password_reset_form': accounts.forms.PasswordResetForm,
             'post_reset_redirect': 'django.contrib.auth.views.password_reset_done',
-        }),
+        }, name='password-reset'),
     url(r'password_reset_done/$', 'django.contrib.auth.views.password_reset_done', {}),
     #url(r'password_reset_confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)$', 'django.contrib.auth.views.password_reset_confirm', {}),
     #url(r'password_reset_confirm/(?P<uidb36>[0-9A-Za-z\-]+)/(?P<token>[0-9A-Za-z\-]+)$', 'django.contrib.auth.views.password_reset_confirm', {}),

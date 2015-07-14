@@ -11,11 +11,12 @@ export AD_BINDDN_PASSWORD="aeng3Oog"
 export SECRET_KEY="deesohshoayie6PiGoGaghi6thiecaingai2quab2aoheequ8vahsu1phu8ahJio"
 export ZOHO_AUTHTOKEN="add-your-auth-token"
 export PAYPAL_RECEIVER_EMAIL="money@vagrant.lan"
+export SUPPORT_EMAIL_ADDRESS="vagrant@localhost"
 
 # Update the System
 pacman -Syy
-pacman -S archlinux-keyring --noconfirm
-pacman -S package-query pacman --noconfirm
+pacman -S archlinux-keyring --noconfirm --needed
+pacman -S pacman --noconfirm --needed
 pacman-db-upgrade
 pacman -Su --noconfirm
 
@@ -30,7 +31,7 @@ EOF
 locale-gen
 
 # Install Dependencies
-pacman -S --noconfirm --needed postgresql samba nginx redis
+pacman -S --noconfirm --needed postgresql samba nginx redis python git
 
 # Setup Samba
 samba-tool domain provision --realm=vagrant.lan --domain=${AD_DOMAIN} --server-role=dc --use-rfc2307 --adminpass=${AD_BINDDN_PASSWORD}
@@ -38,7 +39,7 @@ systemctl start samba
 systemctl enable samba
 
 # Set Shell Environment Variables
-cat << EOF >> .bashrc
+cat << EOF > .bashrc
 export AD_URL=${AD_URL}
 export AD_DOMAIN=${AD_DOMAIN}
 export AD_BASEDN=${AD_BASEDN}
@@ -47,6 +48,7 @@ export AD_BINDDN_PASSWORD=${AD_BINDDN_PASSWORD}
 export SECRET_KEY=${SECRET_KEY}
 export ZOHO_AUTHTOKEN=${ZOHO_AUTHTOKEN}
 export PAYPAL_RECEIVER_EMAIL=${PAYPAL_RECEIVER_EMAIL}
+export SUPPORT_EMAIL_ADDRESS=${SUPPORT_EMAIL_ADDRESS}
 source venv/bin/activate
 EOF
 
@@ -61,7 +63,9 @@ sudo -u vagrant createdb ps1auth
 # Bootstrap App
 
 sudo -u vagrant python -m venv venv
-sudo -u vagrant venv/bin/pip install -r /vagrant/requirements/local.txt
+sudo -u vagrant venv/bin/pip install --find-links=file:///vagrant/wheelhouse --upgrade pip
+sudo -u vagrant venv/bin/pip install --find-links=file:///vagrant/wheelhouse wheel
+sudo -u vagrant venv/bin/pip install --find-links=file:///vagrant/wheelhouse -r /vagrant/requirements/local.txt
 sudo -u vagrant venv/bin/pip install gunicorn
 sudo -u vagrant -E venv/bin/python /vagrant/manage.py syncdb --noinput
 
@@ -75,6 +79,7 @@ AD_BINDDN_PASSWORD=${AD_BINDDN_PASSWORD}
 SECRET_KEY=${SECRET_KEY}
 ZOHO_AUTHTOKEN=${ZOHO_AUTHTOKEN}
 PAYPAL_RECEIVER_EMAIL=${PAYPAL_RECEIVER_EMAIL}
+SUPPORT_EMAIL_ADDRESS=${SUPPORT_EMAIL_ADDRESS}
 EOF
 
 
@@ -176,16 +181,20 @@ SCRIPT
 
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "archlinux-x86_64"
-  config.vm.box_url = "http://cloud.terry.im/vagrant/archlinux-x86_64.box"
+  config.vm.box = "hef/arch"
   config.vm.provision "shell", inline: $script
   config.vm.network "forwarded_port", guest: 5555, host: 5555, auto_correct: true
   config.vm.network "forwarded_port", guest: 8001, host: 8001, auto_correct: true
   config.vm.network "forwarded_port", guest: 19531, host: 8002, auto_correct: true
   config.vm.network "forwarded_port", guest: 389, host: 1389, auto_correct: true
-
+  config.vm.provider :libvirt do |_, override|
+    override.vm.synced_folder ".", "/vagrant", type: "9p", accessmode: "squash"
+  end
   config.vm.provider "virtualbox" do |v|
     v.memory = 2048
     v.cpus = 2
+  end
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.scope = :box
   end
 end

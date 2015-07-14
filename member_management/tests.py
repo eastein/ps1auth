@@ -1,7 +1,11 @@
 from accounts.models import PS1User
-from .models import Person
+from .models import (
+    IDCheck,
+    Person,
+)
 from django.test import Client, TestCase
 from pprint import pprint
+
 
 class PersonTest(TestCase):
 
@@ -44,3 +48,44 @@ class PersonTest(TestCase):
 
         #clieanup
         PS1User.objects.delete_user(lonely)
+
+    def test_pending_count(self):
+        p1 = Person.objects.create(first_name=".", last_name=".", membership_status="starving_hacker")
+        Person.objects.create(first_name="1", last_name=".", membership_status="full_member")
+
+        # Two new members should show up pending, since they have no ID checks
+        self.assertEqual(2, Person.objects.pending_members().count())
+
+        # One member got an ID checked once, and should still show up as pending
+        IDCheck.objects.create(person=p1, user=self.user)
+        self.assertEqual(2, Person.objects.pending_members().count())
+
+        # With another ID check, that member should not show up as pending
+        IDCheck.objects.create(person=p1, user=self.user)
+        self.assertEqual(1, Person.objects.pending_members().count())
+
+
+class QuorumTest(TestCase):
+
+    def test_no_members(self):
+        self.assertEqual(1, Person.objects.quorum())
+
+    def test_no_full_members(self):
+        Person.objects.create(first_name=".", last_name=".", membership_status="starving_hacker")
+        self.assertEqual(1, Person.objects.quorum())
+
+    def test_quorum(self):
+        # no members
+        self.assertEqual(1, Person.objects.quorum())
+
+        Person.objects.create(first_name="1", last_name=".", membership_status="full_member")
+        self.assertEqual(1, Person.objects.quorum())
+
+        Person.objects.create(first_name="2", last_name=".", membership_status="full_member")
+        self.assertEqual(1, Person.objects.quorum())
+
+        Person.objects.create(first_name="3", last_name=".", membership_status="full_member")
+        self.assertEqual(1, Person.objects.quorum())
+
+        Person.objects.create(first_name="4", last_name=".", membership_status="full_member")
+        self.assertEqual(2, Person.objects.quorum())

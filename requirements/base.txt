@@ -1,5 +1,5 @@
-Django==1.8
-ldap3==0.9.7.2
+Django==1.8.2
+ldap3==0.9.8.4
 pytz==2013b
 psycopg2==2.5.1
 #django-money==0.4.1
