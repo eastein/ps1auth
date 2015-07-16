@@ -12,7 +12,7 @@ export SECRET_KEY="deesohshoayie6PiGoGaghi6thiecaingai2quab2aoheequ8vahsu1phu8ah
 export ZOHO_AUTHTOKEN="add-your-auth-token"
 export PAYPAL_RECEIVER_EMAIL="money@vagrant.lan"
 export SUPPORT_EMAIL_ADDRESS="vagrant@localhost"
-export DISCOURSE_BASE_URL="http://discourse.vagrant.lan'
+export DISCOURSE_BASE_URL="http://discourse.vagrant.lan"
 export DISCOURSE_SSO_SECRET="989175d0b666378b038b344a587033d94334badeb5201321fc05b8e952bc4a8f"
 
 # Update the System
