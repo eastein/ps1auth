@@ -1,6 +1,7 @@
 import base64
 import hmac
 import hashlib
+import uuid
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
@@ -39,7 +40,8 @@ def sso(request):
     params = {
         'nonce': qs[b'nonce'][0],
         'email': request.user.ldap_user['mail'][0],
-        'external_id': base64.encodebytes(request.user.ldap_user['objectGUID'][0]), #discourse doen't like the objectGUID bytes shoved into a payload, encode that shit.
+        #discourse doen't like the objectGUID bytes shoved into a payload. Thanks to hef for uuid bytes_le encoding tips
+        'external_id': uuid.UUID(bytes_le=request.user.ldap_user['objectGUID'][0]),
         'username': request.user.ldap_user['sAMAccountName'][0],
     }
 
