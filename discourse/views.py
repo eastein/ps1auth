@@ -13,9 +13,10 @@ from urllib import parse, request, error
 def sso(request):
     payload = request.GET.get('sso')
     signature = request.GET.get('sig')
+    support_email=format(settings.SUPPORT_EMAIL_ADDRESS)
 
     if None in [payload, signature]:
-        return HttpResponseBadRequest('No SSO payload or signature. Please contact support if this problem persists.')
+        return HttpResponseBadRequest('No SSO payload or signature. Please {} support if this problem persists.'.format(support_email))
 
     ## Validate the payload
 
@@ -25,14 +26,14 @@ def sso(request):
         assert b'nonce' in decoded
         assert len(payload) > 0
     except AssertionError:
-        return HttpResponseBadRequest('Invalid payload. Please contact support if this problem persists.')
+        return HttpResponseBadRequest('Invalid payload. Please contact {} if this problem persists.'.format(support_email))
 
     key = bytes(settings.DISCOURSE_SSO_SECRET, 'utf-8') # must be unicode for python3
     h = hmac.new(key, payload, digestmod=hashlib.sha256)
     this_signature = h.hexdigest()
 
     if this_signature != signature:
-        return HttpResponseBadRequest('Invalid payload. Please contact support if this problem persists.')
+        return HttpResponseBadRequest('Invalid payload. Please contact {} if this problem persists.'.format(support_email))
 
     ## Build the return payload
 
