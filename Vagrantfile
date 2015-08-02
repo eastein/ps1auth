@@ -71,7 +71,9 @@ sudo -u vagrant venv/bin/pip install --find-links=file:///vagrant/wheelhouse --u
 sudo -u vagrant venv/bin/pip install --find-links=file:///vagrant/wheelhouse wheel
 sudo -u vagrant venv/bin/pip install --find-links=file:///vagrant/wheelhouse -r /vagrant/requirements/local.txt
 sudo -u vagrant venv/bin/pip install gunicorn
-sudo -u vagrant -E venv/bin/python /vagrant/manage.py syncdb --noinput
+sudo -u vagrant -E venv/bin/python /vagrant/manage.py migrate --noinput
+# Load Fixture data
+sudo -u vagrant -E venv/bin/python /vagrant/manage.py loaddata doors
 
 # Setup systemd environment file
 cat << EOF > /home/vagrant/ps1auth.conf

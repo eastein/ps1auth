@@ -1,0 +1,34 @@
+[
+{
+  "model": "rfid.resource",
+  "fields": {
+    "name": "frontdoor",
+    "display_name": "Front Door"
+  },
+  "pk": 1
+},
+{
+  "model": "rfid.resource",
+  "fields": {
+    "name": "backdoor",
+    "display_name": "Back Door"
+  },
+  "pk": 2
+},
+{
+  "model": "rfid.webunlock",
+  "fields": {
+    "resource": 1,
+    "url": "http://frontdoor.pumpingstationone.org:8080/open"
+  },
+  "pk": 1
+},
+{
+  "model": "rfid.webunlock",
+  "fields": {
+    "resource": 2,
+    "url": "http://backdoor.pumpingstationone.org:8080/open"
+  },
+  "pk": 2
+}
+]
