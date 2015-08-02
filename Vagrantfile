@@ -124,7 +124,7 @@ events {
 http {
     include       mime.types;
     default_type  application/octet-stream;
-    sendfile        on;
+    sendfile        off;
     keepalive_timeout  65;
     access_log /var/log/nginx/access.log combined;
     upstream ps1auth
