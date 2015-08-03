@@ -14,6 +14,8 @@ celerybeat-schedule
 celerybeat.pid
 celeryev.pid
 db.sqlite3
+docs/_build
+docs/_build_html
 local_settings.py
 media/
 reports/
