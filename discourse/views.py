@@ -41,7 +41,7 @@ def sso(request):
     params = {
         'nonce': qs[b'nonce'][0],
         'email': request.user.email,
-        'external_id': request.user.get_username(),
+        'external_id': request.user.pk,
         'username': request.user.get_short_name(),
     }
 
