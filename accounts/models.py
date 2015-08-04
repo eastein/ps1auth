@@ -222,7 +222,7 @@ class PS1User(AbstractBaseUser):
     @property
     def email(self):
         if self.ldap_user:
-            return self.ldap_user.get('mail')[0]
+            return self.ldap_user.get('mail', [''])[0]
         else:
             return None
 
