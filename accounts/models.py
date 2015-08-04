@@ -219,6 +219,13 @@ class PS1User(AbstractBaseUser):
                 cache.set(self.object_guid, self._ldap_user, 24 * 60 * 60 * 70)
         return self._ldap_user
 
+    @property
+    def email(self):
+        if self.ldap_user:
+            return self.ldap_user.get('email', None)
+        else:
+            return None
+
     def _expire_ldap_data(self):
         if hasattr(self, '_ldap_user'):
             del(self._ldap_user)
