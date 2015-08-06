@@ -40,10 +40,9 @@ def sso(request):
     qs = parse.parse_qs(decoded)
     params = {
         'nonce': qs[b'nonce'][0],
-        'email': request.user.ldap_user['mail'][0],
-        #discourse doen't like the objectGUID bytes shoved into a payload. Thanks to hef for uuid bytes_le encoding tips
-        'external_id': uuid.UUID(bytes_le=request.user.ldap_user['objectGUID'][0]),
-        'username': request.user.ldap_user['sAMAccountName'][0],
+        'email': request.user.email,
+        'external_id': request.user.pk,
+        'username': request.user.get_short_name(),
     }
 
     return_payload = base64.encodestring(bytes(parse.urlencode(params), 'utf-8'))
