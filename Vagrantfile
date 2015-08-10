@@ -12,6 +12,8 @@ export SECRET_KEY="deesohshoayie6PiGoGaghi6thiecaingai2quab2aoheequ8vahsu1phu8ah
 export ZOHO_AUTHTOKEN="add-your-auth-token"
 export PAYPAL_RECEIVER_EMAIL="money@vagrant.lan"
 export SUPPORT_EMAIL_ADDRESS="vagrant@localhost"
+export DISCOURSE_BASE_URL="http://discourse.vagrant.lan"
+export DISCOURSE_SSO_SECRET="989175d0b666378b038b344a587033d94334badeb5201321fc05b8e952bc4a8f"
 
 # Update the System
 pacman -Syy
@@ -49,6 +51,8 @@ export SECRET_KEY=${SECRET_KEY}
 export ZOHO_AUTHTOKEN=${ZOHO_AUTHTOKEN}
 export PAYPAL_RECEIVER_EMAIL=${PAYPAL_RECEIVER_EMAIL}
 export SUPPORT_EMAIL_ADDRESS=${SUPPORT_EMAIL_ADDRESS}
+export DISCOURSE_BASE_URL=${DISCOURSE_BASE_URL}
+export DISCOURSE_SSO_SECRET=${DISCOURSE_SSO_SECRET}
 source venv/bin/activate
 EOF
 
@@ -67,7 +71,9 @@ sudo -u vagrant venv/bin/pip install --find-links=file:///vagrant/wheelhouse --u
 sudo -u vagrant venv/bin/pip install --find-links=file:///vagrant/wheelhouse wheel
 sudo -u vagrant venv/bin/pip install --find-links=file:///vagrant/wheelhouse -r /vagrant/requirements/local.txt
 sudo -u vagrant venv/bin/pip install gunicorn
-sudo -u vagrant -E venv/bin/python /vagrant/manage.py syncdb --noinput
+sudo -u vagrant -E venv/bin/python /vagrant/manage.py migrate --noinput
+# Load Fixture data
+sudo -u vagrant -E venv/bin/python /vagrant/manage.py loaddata doors
 
 # Setup systemd environment file
 cat << EOF > /home/vagrant/ps1auth.conf
@@ -80,8 +86,9 @@ SECRET_KEY=${SECRET_KEY}
 ZOHO_AUTHTOKEN=${ZOHO_AUTHTOKEN}
 PAYPAL_RECEIVER_EMAIL=${PAYPAL_RECEIVER_EMAIL}
 SUPPORT_EMAIL_ADDRESS=${SUPPORT_EMAIL_ADDRESS}
+DISCOURSE_BASE_URL=${DISCOURSE_BASE_URL}
+DISCOURSE_SSO_SECRET=${DISCOURSE_SSO_SECRET}
 EOF
-
 
 # PS1Auth Systemd Service File
 cat << EOF > /etc/systemd/system/ps1auth.service
@@ -119,7 +126,7 @@ events {
 http {
     include       mime.types;
     default_type  application/octet-stream;
-    sendfile        on;
+    sendfile        off;
     keepalive_timeout  65;
     access_log /var/log/nginx/access.log combined;
     upstream ps1auth

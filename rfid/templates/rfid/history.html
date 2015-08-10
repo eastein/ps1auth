@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% load staticfiles %}
+
+{% block extra_head %}
+<script src="{% static "rfid/rfid.js" %}"></script>
+{% endblock %}
+
+{% block content %}
+<h2>Door Unlock</h2>
+<div class="row">
+  {% for unlock in webunlocks %}
+  <div class="col-xs-4 col-md-2">
+    <a role="button" class="rfid-btn btn btn-success" href="{% url 'rfid.views.unlock' unlock.resource.name %}"><span class="fa fa-lock"></span> {{ unlock.resource }}</a>
+  </div>
+  {% endfor %}
+</div>
+
+<h2>Recent Activity From the Last 12 Hours</h2>
+{% for log_event in log_events %}
+<div class="row">
+  <div class="col-sm-12">
+    {{log_event.user|title}} opened the {{log_event.resource.display_name|lower}} {{log_event.created_on|timesince}} ago.
+  </div>
+</div>
+{% endfor %}
+</div>
+
+{% endblock %}

@@ -15,10 +15,11 @@ billiard==3.3.0.19
 amqp==1.4.6
 anyjson==0.3.3
 django-celery==3.1.16
-django-reversion==1.8.5
+django-reversion==1.8.7
 django-debug-toolbar==1.2.2
 django-bootstrap3==5.0.3
 django-bootstrap3-datetimepicker==2.2.3
 #django-tables2==1.0.0
 git+https://github.com/bradleyayers/django-tables2.git@679eb76daa3333556dbfdae4acd092e59a1c9b21
 redis==2.10.3
+django-model-utils==2.2
