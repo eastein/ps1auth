@@ -18,6 +18,7 @@
     </style>
     {#<link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-responsive.min.css">#}
     <link href={% static "css/ps1auth.css" %} rel="stylesheet">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
     {% bootstrap_javascript %}
     {% block extra_head %}{% endblock %}
@@ -38,6 +39,7 @@
           <ul class="nav navbar-nav navbar-right">
             {% if user.is_authenticated %}
             {# <li><a href="{% url 'paypal_integration.views.reports' %}">Reports</a></li> #}
+            <li><a href="{% url 'rfid.views.history' %}">Door Control</a></li>
             {% if user.is_staff %}<li><a href="{% url 'member_management.views.person_list' %}">Member Management</a></li>{% endif %}
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ user.get_short_name }} <span class="caret"></span></a>
@@ -61,7 +63,9 @@
       </div>
     </nav>
     <div class="container">
-      {% bootstrap_messages %}
+      <div id=alerts>
+        {% bootstrap_messages %}
+      </div>
       {% block content %}<h1>Empty page</h1><p>There doesn't seem to be anything here</p>{% endblock %}
     </div>
     <footer class="footer" >

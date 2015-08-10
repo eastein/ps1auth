@@ -22,3 +22,4 @@ django-bootstrap3-datetimepicker==2.2.3
 #django-tables2==1.0.0
 git+https://github.com/bradleyayers/django-tables2.git@679eb76daa3333556dbfdae4acd092e59a1c9b21
 redis==2.10.3
+django-model-utils==2.2
