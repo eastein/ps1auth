@@ -9,8 +9,6 @@ export AD_BASEDN="CN=Users,DC=vagrant,DC=lan"
 export AD_BINDDN="Administrator@VAGRANT"
 export AD_BINDDN_PASSWORD="aeng3Oog"
 export SECRET_KEY="deesohshoayie6PiGoGaghi6thiecaingai2quab2aoheequ8vahsu1phu8ahJio"
-export ZOHO_AUTHTOKEN="add-your-auth-token"
-export PAYPAL_RECEIVER_EMAIL="money@vagrant.lan"
 export SUPPORT_EMAIL_ADDRESS="vagrant@localhost"
 export DISCOURSE_BASE_URL="http://discourse.vagrant.lan"
 export DISCOURSE_SSO_SECRET="989175d0b666378b038b344a587033d94334badeb5201321fc05b8e952bc4a8f"
@@ -172,6 +170,10 @@ RestartSec=10
 WantedBy=multi-user.target
 EOF
 
+# Enable PyCharm Debugging
+echo "KexAlgorithms +diffie-hellman-group1-sha1" >> /etc/ssh/sshd_config
+systemctl restart sshd
+
 # Configure App to Start Automatically
 systemctl start ps1auth.socket
 systemctl enable ps1auth.socket
@@ -190,8 +192,10 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "hef/arch"
   config.vm.provision "shell", inline: $script
+  config.vm.network "forwarded_port", guest: 5432, host: 5432, auto_correct: true
   config.vm.network "forwarded_port", guest: 5555, host: 5555, auto_correct: true
   config.vm.network "forwarded_port", guest: 8001, host: 8001, auto_correct: true
+  config.vm.network "forwarded_port", guest: 8000, host: 8000, auto_correct: true
   config.vm.network "forwarded_port", guest: 19531, host: 8002, auto_correct: true
   config.vm.network "forwarded_port", guest: 389, host: 1389, auto_correct: true
   config.vm.provider :libvirt do |_, override|

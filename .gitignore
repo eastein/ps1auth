@@ -20,3 +20,4 @@ celerybeat-schedule
 celerybeat.pid
 celeryev.pid
 wheelhouse/
+.idea/workspace.xml
