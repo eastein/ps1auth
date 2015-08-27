@@ -2,7 +2,6 @@
 <project version="4">
   <component name="dataSourceStorageLocal">
     <data-source name="Django default" uuid="1595e392-69ea-4fb1-9581-7045c7867419">
-      <user-name>vagrant</user-name>
       <schema-pattern>ps1auth.pg_catalog ps1auth.public</schema-pattern>
       <default-schemas>ps1auth.pg_catalog ps1auth.public</default-schemas>
       <ssh-properties>
