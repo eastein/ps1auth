@@ -1,5 +1,7 @@
 Django==1.8.2
+djangorestframework==3.2.3
 ldap3==0.9.8.4
+Markdown==2.6.2
 pytz==2013b
 psycopg2==2.5.1
 #django-money==0.4.1
