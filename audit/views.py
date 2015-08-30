@@ -1,6 +1,7 @@
 import uuid
-from django.http import HttpResponseRedirect, HttpResponseForbidden
 
+from django.contrib.admin.views.decorators import staff_member_required
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -19,6 +20,7 @@ class LdapUser(object):
         self.person = Person.objects.filter(user_id=self.uuid).first()
 
 
+@staff_member_required
 def unmatched_ldap_accounts(request):
     context = {}
     with get_ldap_connection() as c:
@@ -34,6 +36,7 @@ def unmatched_ldap_accounts(request):
     return render(request, 'audit/ldap.html', context)
 
 
+@staff_member_required
 def ldap_account(request, ldap_dn):
     context = {}
     with get_ldap_connection() as c:
@@ -53,6 +56,7 @@ def ldap_account(request, ldap_dn):
     return render(request, 'audit/ldap_user.html', context)
 
 
+@staff_member_required
 def link_ldap_account_to_mm_entry(request):
     if request.method == 'POST':
         form = AssociateAccountsForm(request.POST)
