@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2>{{ ldap_user.dn }}</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h3>LDIF</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <pre>{{ ldif }}</pre>
+        </div>
+    </div>
+    <div class="row">
+    <div class="col-md-12">
+        <h3>User Data</h3>
+    </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <ul>
+                <li>username: {{ entry.sAMAccountName }}</li>
+                <li>first_name: {% if givenName in entry %}{{ entry.givenName }}{% endif %}</li>
+                <li>last_name: {% if sn in entry %}{{ entry.sn }}{% endif %}</li>
+                <li>email: {% if mail in entry %}{{ entry.mail }}{% endif %}</li>
+                <li>guid: {{ ldap_user.uuid }}</li>
+                <li>person: {{ ldap_user.person }}</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Associate ldap account with member management entry</h3>
+        </div>
+    </div>
+    <div class="row">
+        {% for person, form in people %}
+            <div class=col-md-4">
+                <ul>
+                    <li>First Name: {{ person.first_name }}</li>
+                    <li>Last Name: {{ person.last_name }}</li>
+                    <li>Email: {{ person.email }}</li>
+                    <li>PayPal Email: {{ person.paypal.email }}</li>
+
+                </ul>
+                <form class="form" action="{% url 'audit.views.link_ldap_account_to_mm_entry' %}" method="post">
+                    {% csrf_token %}
+                    {% bootstrap_form form  %}
+                    {% buttons %}
+                        <button type="submit" class="btn btn-successs">
+                            <i class="fa fa-compress"></i> Associate
+                        </button>
+                    {% endbuttons %}
+                </form>
+            </div>
+        {% empty %}
+            <div class="col-md-12">
+                <p>There are no unassociated member management entries.</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

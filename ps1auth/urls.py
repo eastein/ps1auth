@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     #url(r'^pp/', include('paypal_integration.urls')),
     url(r'^rfid/', include('rfid.urls')),
     url(r'^signup/', include('signup.urls')),
+    url(r'^audit/', include('audit.urls')),
 )
 
 # Cool URIs don't change

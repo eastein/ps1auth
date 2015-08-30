@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% for ldap_user in ldap_users %}
+        <div class="row">
+            <h3>{{ ldap_user.dn }}</h3>
+        </div>
+        <div class="row">
+            <div class=col-md-4>{{ ldap_user.uuid }}</div>
+            <div class="col-md-2">{{ ldap_user.person }}</div>
+            <div class="col-md-2"><a href="{%  url 'audit.views.ldap_account' ldap_dn=ldap_user.dn %}">details</a></div>
+        </div>
+    {% endfor %}
+{% endblock %}

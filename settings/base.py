@@ -137,6 +137,7 @@ PROJECT_APPS = (
     'member_management',
     'crm',
     'signup',
+    'audit',
 )
 
 INSTALLED_APPS = (
