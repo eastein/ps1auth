@@ -1,12 +1,17 @@
 from django.conf.urls import patterns, include, url
-from django.core.urlresolvers import reverse
 from django.views.generic import RedirectView
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from rest_framework import routers
+
+from member_management.views import PersonViewSet
 
 admin.autodiscover()
+
+router = routers.DefaultRouter()
+router.register(r'people', PersonViewSet, base_name='people')
 
 urlpatterns = patterns('',
     # Examples:
@@ -21,6 +26,7 @@ urlpatterns = patterns('',
     #url(r'^pp/', include('paypal_integration.urls')),
     url(r'^rfid/', include('rfid.urls')),
     url(r'^signup/', include('signup.urls')),
+    url(r'^api/', include(router.urls)),
 )
 
 # Cool URIs don't change
@@ -30,3 +36,4 @@ urlpatterns += patterns('',
 )
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += staticfiles_urlpatterns()
+router = routers.DefaultRouter()

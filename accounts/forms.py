@@ -128,7 +128,7 @@ class EditUserGroupForm(forms.Form):
         elif(self.cleaned_data['action'] == 'remove'):
             return self.group.remove_user(self.account)
         else:
-            return false
+            return False
 
     @property
     def group(self):

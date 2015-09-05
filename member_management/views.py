@@ -12,6 +12,8 @@ from .tables import PersonTable
 from math import ceil
 import reversion
 from django_tables2 import RequestConfig
+from rest_framework import viewsets
+from .serializers import PersonSerializer
 
 @staff_member_required
 def send_templated_email(request, email_template_id, person_id=None):
@@ -124,3 +126,14 @@ def id_check(request, person_id):
     data['person'] = person
     data['form'] = id_check_form
     return render(request, 'member_management/id_check.html', data)
+
+class PersonViewSet(viewsets.ModelViewSet):
+
+    serializer_class = PersonSerializer
+
+    def get_queryset(self):
+        queryset = Person.objects.all()
+        paypal_email = self.request.query_params.get('paypal_email', None)
+        if paypal_email is not None:
+            queryset = queryset.filter(paypal__email=paypal_email)
+        return queryset

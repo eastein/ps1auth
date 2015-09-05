@@ -155,6 +155,7 @@ INSTALLED_APPS = (
     'django_tables2',
     #'paypal.standard.ipn',
     #'billing',
+    'rest_framework',
 )
 
 POST_INSTALLED_APPS = (
@@ -228,6 +229,12 @@ CKEDITOR_CONFIGS = {
         'width': 704,
         'toolbar': 'standard',
     }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAdminUser'
+    ]
 }
 
 AUTHENTICATION_BACKENDS = (
