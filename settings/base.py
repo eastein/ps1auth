@@ -246,14 +246,12 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 BROKER_URL = 'redis://localhost:6379/0'
 
-
 SECRET_KEY = get_env_variable('SECRET_KEY')
 AD_URL = get_env_variable('AD_URL')
 AD_DOMAIN = get_env_variable('AD_DOMAIN')
 AD_BASEDN = get_env_variable('AD_BASEDN')
 AD_BINDDN = get_env_variable('AD_BINDDN')
 AD_BINDDN_PASSWORD = get_env_variable('AD_BINDDN_PASSWORD')
-ZOHO_AUTHTOKEN = get_env_variable('ZOHO_AUTHTOKEN')
 SUPPORT_EMAIL_ADDRESS = get_env_variable('SUPPORT_EMAIL_ADDRESS')
 
 DISCOURSE_BASE_URL = get_env_variable('DISCOURSE_BASE_URL')
