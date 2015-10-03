@@ -22,7 +22,7 @@
       <sourceFolder url="file://$MODULE_DIR$/crm" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/accounts" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Remote Python 3.4.3 Vagrant VM at ~/PycharmProjects/ps1auth (/home/vagrant/venv/bin/python)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Remote Python 3.5.0 Vagrant VM at ~/projects/ps1auth (/home/vagrant/venv/bin/python)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">
