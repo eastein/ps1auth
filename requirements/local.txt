@@ -1,4 +1,0 @@
--r base.txt
-coverage==3.7.1
-django-jenkins==0.17.0
-docutils==0.12
