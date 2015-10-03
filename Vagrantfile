@@ -69,7 +69,7 @@ sudo -u vagrant createdb ps1auth
 sudo -u vagrant python -m venv venv
 sudo -u vagrant venv/bin/pip install --find-links=file:///vagrant/wheelhouse --upgrade pip
 sudo -u vagrant venv/bin/pip install --find-links=file:///vagrant/wheelhouse wheel
-sudo -u vagrant venv/bin/pip install --find-links=file:///vagrant/wheelhouse -r /vagrant/requirements/local.txt
+sudo -u vagrant venv/bin/pip install --find-links=file:///vagrant/wheelhouse -r /vagrant/requirements.txt
 sudo -u vagrant venv/bin/pip install gunicorn
 sudo -u vagrant -E venv/bin/python /vagrant/manage.py migrate --noinput
 # Load Fixture data
