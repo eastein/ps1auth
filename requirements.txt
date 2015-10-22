@@ -5,12 +5,12 @@ billiard==3.3.0.20
 celery==3.1.18
 coverage==4.0
 dateutils==0.6.6
-Django==1.8.4
+Django==1.8.5
 django-bootstrap3==6.2.2
 django-bootstrap3-datetimepicker==2.2.3
 django-celery==3.1.16
 django-ckeditor==5.0.2
-django-jenkins==0.17.0
+django-jenkins==0.18.1
 django-model-utils==2.3.1
 django-reversion==1.9.3
 django-tables2==1.0.4
