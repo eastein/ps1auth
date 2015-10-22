@@ -207,5 +207,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
   if Vagrant.has_plugin?("vagrant-cachier")
     config.cache.scope = :box
+    config.cache.synced_folder_opts = {
+      type: "9p",
+      accessmode: "squash"
+    }
   end
 end
