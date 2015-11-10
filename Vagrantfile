@@ -205,6 +205,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.memory = 2048
     v.cpus = 2
   end
+  config.vm.provider :libvirt do |libvirt|
+      libvirt.memory = 2048
+  end
   if Vagrant.has_plugin?("vagrant-cachier")
     config.cache.scope = :box
     config.cache.synced_folder_opts = {
